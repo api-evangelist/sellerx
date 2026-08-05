@@ -1,0 +1,104 @@
+generated: '2026-08-05'
+method: searched
+source: >-
+  Live probes of https://mcp.sellerx.com — the RFC 8414 and RFC 9728 metadata
+  documents and the observed 401 challenge on the MCP endpoint.
+note: >-
+  Every assertion below is grounded in an observed response. Where the surface is
+  auth-gated (the MCP tool manifest) conformance is recorded as `unknown` rather
+  than assumed. SellerX makes no published compliance or certification claims —
+  see security/ (no trust center, no vulnerability-disclosure program found).
+
+standards:
+- id: oauth2
+  conforms: true
+  evidence: >-
+    Authorization server metadata advertises authorization_code + refresh_token
+    grants, code response type and a token endpoint at
+    https://mcp.sellerx.com/token.
+- id: rfc8414-oauth-authorization-server-metadata
+  conforms: true
+  evidence: >-
+    GET /.well-known/oauth-authorization-server returns 200 application/json with
+    issuer, authorization_endpoint, token_endpoint and registration_endpoint.
+- id: rfc9728-oauth-protected-resource-metadata
+  conforms: true
+  evidence: >-
+    GET /.well-known/oauth-protected-resource/mcp returns 200 with resource,
+    authorization_servers, scopes_supported and bearer_methods_supported; the URL
+    is advertised via the WWW-Authenticate resource_metadata parameter on the 401.
+- id: rfc7636-pkce
+  conforms: true
+  evidence: >-
+    code_challenge_methods_supported is [S256]; GET /authorize without
+    code_challenge returns 400 "code_challenge: Field required".
+- id: rfc7591-dynamic-client-registration
+  conforms: true
+  evidence: >-
+    registration_endpoint https://mcp.sellerx.com/register is advertised and
+    returns 405 Method Not Allowed on GET, i.e. it accepts POST registration.
+    Not exercised — registering would create state on SellerX systems.
+- id: rfc6750-bearer-token-usage
+  conforms: true
+  evidence: >-
+    bearer_methods_supported is [header]; the 401 carries a conformant
+    WWW-Authenticate Bearer challenge with error="invalid_token".
+- id: oauth2.1
+  conforms: true
+  evidence: >-
+    Authorization-code + PKCE S256 mandatory, no implicit or password grants
+    advertised — consistent with the OAuth 2.1 profile MCP requires.
+- id: mcp-authorization
+  conforms: true
+  evidence: >-
+    Implements the MCP authorization spec: protected-resource metadata pointed at
+    from the WWW-Authenticate challenge, OAuth 2.1 AS with dynamic client
+    registration.
+- id: mcp-streamable-http
+  conforms: unknown
+  evidence: >-
+    POST /mcp is the endpoint and /sse returns 404, which is consistent with
+    Streamable HTTP rather than the deprecated HTTP+SSE transport, but the
+    transport cannot be confirmed without an authenticated initialize.
+- id: openid-connect
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404.
+- id: openapi
+  conforms: false
+  evidence: >-
+    No OpenAPI or Swagger document found on any SellerX host. The corporate site
+    answers 200 with an identical SPA body for /openapi.json, /openapi.yaml,
+    /swagger.json and /api-docs, which is a soft 404, and mcp.sellerx.com returns
+    a real 404 for all of them.
+- id: asyncapi
+  conforms: false
+  evidence: No event, streaming or webhook surface published.
+- id: a2a-agent-card
+  conforms: false
+  evidence: >-
+    /.well-known/agent-card.json and /.well-known/agent.json return a real 404 on
+    mcp.sellerx.com and a soft 404 (SPA catch-all) on www.sellerx.com.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    Error bodies use a flat OAuth-style {"error","error_description"} envelope
+    with content-type application/json, not application/problem+json.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: No security.txt served on any SellerX host.
+
+x-evidence:
+  fetched: '2026-08-05'
+  probed:
+  - url: https://mcp.sellerx.com/.well-known/oauth-authorization-server
+    http_status: 200
+  - url: https://mcp.sellerx.com/.well-known/oauth-protected-resource/mcp
+    http_status: 200
+  - url: https://mcp.sellerx.com/authorize
+    http_status: 400
+  - url: https://mcp.sellerx.com/register
+    http_status: 405
+  - url: https://mcp.sellerx.com/mcp
+    http_status: 401
+  - url: https://mcp.sellerx.com/.well-known/openid-configuration
+    http_status: 404

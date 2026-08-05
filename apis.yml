@@ -1,23 +1,115 @@
 aid: sellerx
 name: SellerX
-description: 'SellerX is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'SellerX is a Berlin-based consumer-brand builder, founded in 2020, that
+  acquires, operates and scales everyday consumer products into omnichannel global
+  brands. Originally one of Europe''s largest Amazon FBA aggregators, it merged with
+  KW Commerce in 2021 and with the US aggregator Elevate Brands in 2023, and has since
+  repositioned itself from an aggregator into a brand builder. The group operates 20+
+  brands and 25k+ products across 10+ countries from hubs in Berlin, London, Manila
+  and Dongguan, and has raised more than $750M in equity and debt from Sofina, L Catterton,
+  Cherry Ventures, Felix Capital, 83North, an ADIA subsidiary, BlackRock and Victory
+  Park Capital. SellerX sells consumer goods to consumers through marketplaces and
+  its own channels; it publishes no public API, developer portal, SDK or machine-readable
+  specification of its own.'
 url: https://raw.githubusercontent.com/api-evangelist/sellerx/refs/heads/main/apis.yml
+image: https://www.sellerx.com/logo.png
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-05'
 modified: '2026-08-05'
 tags:
 - Company
-apis: []
+- E-Commerce
+- Consumer Brands
+- Retail
+- Amazon Aggregator
+- Marketplace Seller
+- Consumer Packaged Goods
+- Germany
+apis:
+- aid: sellerx:mcp
+  name: SellerX MCP Server
+  description: >-
+    A live, remotely hosted Model Context Protocol server operated by SellerX at
+    mcp.sellerx.com. The endpoint requires an OAuth 2.1 bearer token, so the tool
+    manifest is auth-gated, but the server publishes RFC 8414 authorization-server
+    metadata and RFC 9728 protected-resource metadata anonymously, along with a
+    dynamic client registration endpoint and mandatory PKCE (S256). SellerX does
+    not link to, document, or advertise this server anywhere on its corporate site;
+    it was discovered through Certificate Transparency logs for sellerx.com.
+  humanURL: https://mcp.sellerx.com/.well-known/oauth-protected-resource/mcp
+  baseURL: https://mcp.sellerx.com/mcp
+  tags:
+  - MCP
+  - Model Context Protocol
+  - OAuth
+  - Agents
+  properties:
+  - type: MCPServer
+    url: mcp/sellerx-mcp.yml
+  - type: Authentication
+    url: authentication/sellerx-authentication.yml
+  - type: OAuthScopes
+    url: scopes/sellerx-scopes.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/sellerx-domain-security.yml
 - type: Website
-  url: https://forgeglobal.com/sellerx_stock/
+  url: https://www.sellerx.com/
+- type: About
+  url: https://www.sellerx.com/about/
+- type: Products
+  url: https://www.sellerx.com/brands/
+- type: Careers
+  url: https://www.sellerx.com/work-with-us/
+- type: PrivacyPolicy
+  url: https://www.sellerx.com/privacy-policy
+- type: Legal
+  url: https://www.sellerx.com/imprint
+- type: GitHubOrganization
+  url: https://github.com/kwcommerce
+- type: LinkedIn
+  url: https://www.linkedin.com/company/seller-x
+- type: MCPServer
+  url: mcp/sellerx-mcp.yml
+- type: Authentication
+  url: authentication/sellerx-authentication.yml
+- type: OAuthScopes
+  url: scopes/sellerx-scopes.yml
+- type: WellKnown
+  url: well-known/sellerx-well-known.yml
+- type: Conformance
+  url: conformance/sellerx-conformance.yml
+x-enrichment:
+  date: '2026-08-05'
+  status: enriched
+  artifacts_added: 8
+  pass: local-v1
+x-coverage:
+  state: covered
+  reason: null
+  detail: >-
+    SellerX runs a live remote MCP server at https://mcp.sellerx.com/mcp that it
+    does not link or document anywhere public — it was found only through
+    Certificate Transparency logs for sellerx.com. Its OAuth 2.1 discovery
+    metadata (RFC 8414 + RFC 9728) is served anonymously and is captured
+    verbatim, but the JSON-RPC tools/list manifest returns 401 invalid_token, so
+    the tool set and its input schemas are auth-gated and deliberately not
+    recorded. The corporate site publishes no API of any kind and answers HTTP
+    200 with an identical SPA body for every path, including nonexistent ones.
+  evidence:
+  - url: https://mcp.sellerx.com/.well-known/oauth-authorization-server
+    status: 200
+  - url: https://mcp.sellerx.com/.well-known/oauth-protected-resource/mcp
+    status: 200
+  - url: https://mcp.sellerx.com/mcp
+    status: 401
+  - url: https://www.sellerx.com/openapi.json
+    status: 200
+  checked: '2026-08-05'

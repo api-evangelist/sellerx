@@ -1,0 +1,59 @@
+generated: '2026-08-05'
+method: searched
+source: live probes of the SellerX MCP host and the corporate website
+host: https://mcp.sellerx.com
+documents:
+- path: /.well-known/oauth-authorization-server
+  standard: RFC 8414 OAuth 2.0 Authorization Server Metadata
+  status: 200
+  content_type: application/json
+  file: sellerx-oauth-authorization-server.json
+- path: /.well-known/oauth-protected-resource/mcp
+  standard: RFC 9728 OAuth 2.0 Protected Resource Metadata
+  status: 200
+  content_type: application/json
+  file: sellerx-oauth-protected-resource.json
+  note: >-
+    Path-suffixed per RFC 9728; the URL was advertised by the WWW-Authenticate
+    resource_metadata parameter on the 401 from https://mcp.sellerx.com/mcp.
+    The unsuffixed /.well-known/oauth-protected-resource returns 404.
+- path: /.well-known/oauth-protected-resource
+  status: 404
+- path: /.well-known/openid-configuration
+  status: 404
+- path: /.well-known/agent-card.json
+  status: 404
+- path: /.well-known/agent.json
+  status: 404
+- path: /.well-known/security.txt
+  status: 404
+- path: /.well-known/mcp.json
+  status: 404
+
+# The corporate site is a single-page app whose origin answers 200 with the
+# identical 190,925-byte homepage for EVERY path, including nonexistent control
+# paths. None of its /.well-known/* responses are real documents.
+other_hosts:
+- host: https://www.sellerx.com
+  soft_404: true
+  evidence:
+    control_path: /definitely-not-a-real-path-zzz9999
+    control_status: 200
+    control_bytes: 190925
+    note: >-
+      /.well-known/security.txt, /.well-known/openid-configuration,
+      /.well-known/oauth-authorization-server, /.well-known/api-catalog,
+      /.well-known/ai-plugin.json, /.well-known/agent-card.json,
+      /.well-known/agent.json, /llms.txt, /openapi.json, /swagger.json and
+      /robots.txt all returned HTTP 200 with a body byte-identical to the
+      control path. No document is actually published at any of them.
+x-evidence:
+  fetched: '2026-08-05'
+  probed:
+  - url: https://mcp.sellerx.com/.well-known/oauth-authorization-server
+    http_status: 200
+  - url: https://mcp.sellerx.com/.well-known/oauth-protected-resource/mcp
+    http_status: 200
+  - url: https://www.sellerx.com/.well-known/security.txt
+    http_status: 200
+    note: soft-404 (SPA catch-all, identical to control)

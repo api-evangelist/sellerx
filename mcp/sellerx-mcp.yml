@@ -1,0 +1,80 @@
+generated: '2026-08-05'
+method: searched
+source: https://mcp.sellerx.com/mcp
+status: published
+server:
+  name: sellerx
+  transport: http
+  url: https://mcp.sellerx.com/mcp
+  protocol: Model Context Protocol (Streamable HTTP)
+  server_software: nginx/1.24.0 (Ubuntu)
+discovery:
+  found_via: >-
+    Certificate Transparency enumeration of sellerx.com (crt.sh) surfaced
+    mcp.sellerx.com, whose leaf certificate was issued 2026-07-29. The host is
+    not linked from www.sellerx.com and is not indexed by any web search or MCP
+    registry we queried.
+  documented_publicly: false
+
+authentication:
+  required: true
+  scheme: OAuth 2.1 bearer token
+  authorization_server: https://mcp.sellerx.com/
+  protected_resource_metadata: https://mcp.sellerx.com/.well-known/oauth-protected-resource/mcp
+  dynamic_client_registration: https://mcp.sellerx.com/register
+  scopes_supported: [read]
+  pkce: S256
+  see: authentication/sellerx-authentication.yml
+
+tools:
+  status: gated
+  note: >-
+    NOT ENUMERATED. An anonymous JSON-RPC tools/list POST to
+    https://mcp.sellerx.com/mcp returns HTTP 401 invalid_token, so the live tool
+    manifest and its inputSchemas require an authenticated introspection we did
+    not perform. SellerX publishes no llms.txt, no OpenAPI and no docs page
+    listing the tools, so there is no public fallback source. No tool list is
+    recorded here because none could be observed — nothing is inferred or
+    invented.
+
+probes:
+- url: https://mcp.sellerx.com/mcp
+  method: POST
+  body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  http_status: 401
+  response: '{"error": "invalid_token", "error_description": "Authentication failed..."}'
+  www_authenticate: >-
+    Bearer error="invalid_token",
+    resource_metadata="https://mcp.sellerx.com/.well-known/oauth-protected-resource/mcp"
+- url: https://mcp.sellerx.com/mcp
+  method: POST
+  body: '{"jsonrpc":"2.0","id":1,"method":"initialize",...}'
+  http_status: 401
+- url: https://mcp.sellerx.com/.well-known/oauth-authorization-server
+  method: GET
+  http_status: 200
+- url: https://mcp.sellerx.com/.well-known/oauth-protected-resource/mcp
+  method: GET
+  http_status: 200
+- url: https://mcp.sellerx.com/authorize
+  method: GET
+  http_status: 400
+  response: 'client_id / response_type / code_challenge: Field required'
+  note: PKCE code_challenge is mandatory — the endpoint is live and validating.
+- url: https://mcp.sellerx.com/register
+  method: GET
+  http_status: 405
+  note: >-
+    Method Not Allowed on GET, i.e. the RFC 7591 dynamic client registration
+    endpoint accepts POST. We did NOT register a client — registering would
+    create state on SellerX systems, which is outside read-only profiling.
+- url: https://mcp.sellerx.com/sse
+  http_status: 404
+- url: https://mcp.sellerx.com/
+  http_status: 404
+
+x-evidence:
+  fetched: '2026-08-05'
+  url: https://mcp.sellerx.com/mcp
+  http_status: 401
+  content_type: application/json

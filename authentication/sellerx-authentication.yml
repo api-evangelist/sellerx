@@ -1,0 +1,76 @@
+generated: '2026-08-05'
+method: searched
+source: https://mcp.sellerx.com/.well-known/oauth-authorization-server
+docs: null
+note: >-
+  SellerX publishes no OpenAPI, so this profile is not derived from
+  securitySchemes. It is read verbatim from the RFC 8414 authorization-server
+  metadata and the RFC 9728 protected-resource metadata that the SellerX MCP
+  host serves anonymously, plus the observed 401 challenge on the MCP endpoint.
+
+summary:
+  types: [oauth2]
+  api_key_in: []
+  oauth2_flows: [authorizationCode]
+  bearer_methods: [header]
+  pkce_required: true
+  dynamic_client_registration: true
+
+schemes:
+- name: OAuth2
+  type: oauth2
+  applies_to: https://mcp.sellerx.com/mcp
+  sources:
+  - well-known/sellerx-oauth-authorization-server.json
+  - well-known/sellerx-oauth-protected-resource.json
+  issuer: https://mcp.sellerx.com/
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://mcp.sellerx.com/authorize
+    tokenUrl: https://mcp.sellerx.com/token
+    refreshUrl: https://mcp.sellerx.com/token
+    scopes:
+      read: >-
+        The only scope advertised in scopes_supported. SellerX publishes no
+        scope reference describing what it grants.
+  registration_endpoint: https://mcp.sellerx.com/register
+  grant_types_supported: [authorization_code, refresh_token]
+  response_types_supported: [code]
+  token_endpoint_auth_methods_supported: [client_secret_post]
+  code_challenge_methods_supported: [S256]
+  bearer_methods_supported: [header]
+
+observed_challenge:
+  url: https://mcp.sellerx.com/mcp
+  http_status: 401
+  www_authenticate: >-
+    Bearer error="invalid_token", error_description="Authentication failed. The
+    provided bearer token is invalid, expired, or no longer recognized by the
+    server. To resolve: clear authentication tokens in your MCP client and
+    reconnect. Your client should automatically re-register and obtain new
+    tokens.",
+    resource_metadata="https://mcp.sellerx.com/.well-known/oauth-protected-resource/mcp"
+
+gaps:
+- >-
+  No OpenID Connect discovery: /.well-known/openid-configuration returns 404, so
+  the authorization server is OAuth 2.0/2.1 only, not OIDC.
+- >-
+  No human-readable authentication documentation is published anywhere on
+  sellerx.com; the metadata endpoints are the only public description of the
+  auth model.
+- >-
+  scopes_supported carries a single opaque `read` scope with no published
+  meaning, so a client cannot reason about least privilege before registering.
+
+x-evidence:
+  fetched: '2026-08-05'
+  probed:
+  - url: https://mcp.sellerx.com/.well-known/oauth-authorization-server
+    http_status: 200
+  - url: https://mcp.sellerx.com/.well-known/oauth-protected-resource/mcp
+    http_status: 200
+  - url: https://mcp.sellerx.com/mcp
+    http_status: 401
+  - url: https://mcp.sellerx.com/.well-known/openid-configuration
+    http_status: 404
