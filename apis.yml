@@ -24,6 +24,15 @@ tags:
 - Consumer Brands
 - Retail
 - Amazon Aggregator
+- Marketplace-Seller
+- Consumer Packaged Goods
+- Germany
+tags_raw:
+- Company
+- E-Commerce
+- Consumer Brands
+- Retail
+- Amazon Aggregator
 - Marketplace Seller
 - Consumer Packaged Goods
 - Germany
@@ -41,6 +50,10 @@ apis:
   humanURL: https://mcp.sellerx.com/.well-known/oauth-protected-resource/mcp
   baseURL: https://mcp.sellerx.com/mcp
   tags:
+  - MCP
+  - Authentication
+  - Agents
+  tags_raw:
   - MCP
   - Model Context Protocol
   - OAuth
