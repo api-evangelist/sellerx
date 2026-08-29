@@ -12,6 +12,17 @@ description: 'SellerX is a Berlin-based consumer-brand builder, founded in 2020,
   its own channels; it publishes no public API, developer portal, SDK or machine-readable
   specification of its own.'
 url: https://raw.githubusercontent.com/api-evangelist/sellerx/refs/heads/main/apis.yml
+deliveryModel:
+  model: unknown
+  open_source: false
+  commercial: false
+  callable_host: false
+  label: Delivery model not determined — needs a product licence on record
+  confidence: low
+  source:
+  - none
+  generated: '2026-08-28'
+  method: derived
 image: https://www.sellerx.com/logo.png
 x-type: company
 x-source: harvest:secondary-market
